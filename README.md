@@ -10,3 +10,6 @@ This project is a web-based chatbot application built using **Flask** and **Pand
 -  Information retrieved from a processed CSV dataset
 -  Side effects, uses, therapeutic class, and action class displayed
 -  Flask-based lightweight backend
+
+## Screenshot
+![Image](https://github.com/user-attachments/assets/dc440ec4-6f7b-447b-82c4-c19becd0e8ac)
