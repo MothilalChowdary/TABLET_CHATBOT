@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="chat-container" role="dialog" aria-labelledby="chat-title">
+        <h2 id="chat-title">Chatbot</h2>
+        <div id="chat-box" class="chat-box" role="log" aria-live="polite"></div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off" aria-label="Type your message here..." />
+            <button onclick="sendMessage()" id="sendmessage">Send</button>
+        </div>
+        <button onclick="clearChat()" id="clear-chat">Clear Chat</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${message}</div>`;
+            chatBox.innerHTML += `<div class="bot-msg typing"><strong>Bot:</strong> Typing...</div>`;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove typing message
+                const typingMessage = document.querySelector('.typing');
+                if (typingMessage) typingMessage.remove();
+
+                chatBox.innerHTML += `<div class="bot-msg"><strong>Bot:</strong> ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Only scroll to bottom if user is already at the bottom
+                if (chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1) {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+
+                input.value = '';
+            });
+        }
+
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function clearChat() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = ''; // Clear all chat messages
+        }
+    </script>
+</body>
+</html>
